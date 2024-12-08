@@ -4,9 +4,10 @@ import readline from "readline";
 
 const run = (command) => {
   try {
+    process.stdout.write(chalk.yellow(`Running command: ${command}\n`));
     execSync(command, { stdio: "inherit" });
   } catch (error) {
-    console.error(chalk.red(`Error: ${error.message}`));
+    process.stdout.write(chalk.red(`Error: ${error.message}`));
     process.exit(1);
   }
 };
@@ -18,7 +19,9 @@ const ask = (query) => {
   });
 
   return new Promise((resolve) => {
-    const coloredQuery = `${chalk.green(query)} [${chalk.green("y")}/${chalk.red("n")}]: `;
+    const coloredQuery = `${chalk.green(query)} [${chalk.green(
+      "y"
+    )}/${chalk.red("n")}]: `;
     rl.question(coloredQuery, (answer) => {
       rl.close();
 
