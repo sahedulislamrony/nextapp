@@ -8,13 +8,14 @@ import {
   IconSystem,
 } from "@/components/Icons";
 import { JSX, useEffect, useState } from "react";
+import cn from "@/app/lib/cn";
 
 export default function Navbar() {
   const user: boolean = false;
 
   return (
     <>
-      <nav className="w-full flex flex-row h-16  px-20 fixed top-0 right-0 bg-gray-50/5   backdrop-blur-lg border-b-[1px] border-sky-500 ">
+      <nav className="w-full flex flex-row h-16  px-20 fixed top-0 right-0 bg-gray-50/5   backdrop-blur-md border-b-[1px] border-sky-500 ">
         {/* left  sec */}
         <div className="w-[40rem]  flex justify-start gap-4  items-center">
           <div className="w-10 h-10 rounded-full object-center overflow-hidden object-cover cursor-pointer">
@@ -68,7 +69,7 @@ function UnsignedUser() {
         Login
       </button>
       <button className="px-6 py-2 font-semibold border-2 border-sky-400 text-base rounded-[3px] hover:bg-sky-400 hover:text-gray-700 dark:border-sky-600 dark:hover:bg-sky-600 dark:hover:text-gray-950">
-        Signin
+        Signup
       </button>
     </div>
   );
@@ -126,7 +127,7 @@ function Theme() {
       {/* theme switcher */}
 
       {themePanel && (
-        <div className="w-32 py-1 absolute top-[3.7rem] overflow-hidden  -left-[40%] rounded-md bg-gray-700 dark:bg-gray-50/5">
+        <div className="w-32 py-1 absolute top-[3.7rem] overflow-hidden  -left-[40%] rounded-md bg-gray-700 dark:bg-gray-50/5 shadow-sm shadow-gray-50/10">
           <ThemeOption
             text="Light"
             onClick={() => setTheme("light")}
@@ -138,14 +139,14 @@ function Theme() {
             text="Dark"
             active={theme === "dark"}
             onClick={() => setTheme("dark")}
-            icon={<IconStar />}
+            icon={<IconStar className="size-5" />}
           />
 
           <ThemeOption
             text="System"
             onClick={() => setTheme("system")}
             active={theme === "system"}
-            icon={<IconSystem />}
+            icon={<IconSystem className="size-5" />}
           />
         </div>
       )}
@@ -164,16 +165,22 @@ function ThemeOption({
   onClick: () => void;
   icon: JSX.Element;
 }) {
-  const activeClass = active
-    ? "text-sky-500"
-    : "text-gray-50 dark:text-gray-300";
   return (
     <div
       className="w-32 h-8 text-sm flex flex-row justify-start items-center hover:bg-gray-400/10 cursor-pointer "
       onClick={onClick}
     >
       <div className="pl-1">
-        <div className={`h-full p-2 rounded-full ${activeClass}`}>{icon}</div>
+        <div
+          className={cn(
+            "h-full p-2 rounded-full text-gray-50 dark:text-gray-300",
+            {
+              "text-sky-500 dark:text-sky-500": active,
+            }
+          )}
+        >
+          {icon}
+        </div>
       </div>
       <h4 className="font-semibold pl-1 text-gray-50 dark:text-gray-300">
         {text}
