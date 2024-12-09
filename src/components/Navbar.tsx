@@ -1,6 +1,17 @@
+"use client";
+
 import Image from "next/image";
+import {
+  IconLight,
+  IconNotification,
+  IconStar,
+  IconSystem,
+} from "@/components/Icons";
+import { JSX, useEffect, useState } from "react";
 
 export default function Navbar() {
+  const user: boolean = false;
+
   return (
     <>
       <nav className="w-full flex flex-row h-16  px-20 fixed top-0 right-0 bg-gray-50/5   backdrop-blur-lg border-b-[1px] border-sky-500 ">
@@ -28,13 +39,10 @@ export default function Navbar() {
         <div className=" h-full ">
           <div className="h-full w-full flex justify-start items-center relative">
             {/* left bar */}
-            <div className="w-[2px] h-9 bg-gray-950 dark:bg-sky-500 absolute left-0 "></div>
-            {/* Theme switch */}
-            <ThemeIcon />
-            {/* unsigned user */}
-            <UnsignedUser />
-            {/* signed user */}
-            {/* <div className="w-full h-full flex justify-end items-center gap-3 bg-red-50"></div> */}
+            <div className="w-[1px] h-[1.8rem] bg-gray-400 dark:bg-gray-500 absolute left-0 "></div>
+            <Theme />
+            {!user && <UnsignedUser />}
+            {user && <SignedUser />}
           </div>
         </div>
       </nav>
@@ -53,23 +61,6 @@ function NavItem({ name }: { name: string }) {
   );
 }
 
-function ThemeIcon() {
-  return (
-    <div className="px-2 pl-5">
-      <div className="w-full h-full p-2 rounded-full bg-gray-200/45 dark:bg-gray-50/10 cursor-pointer">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          className="size-6 text-sky-500"
-        >
-          <path d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.5 12a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM18.894 6.166a.75.75 0 0 0-1.06-1.06l-1.591 1.59a.75.75 0 1 0 1.06 1.061l1.591-1.59ZM21.75 12a.75.75 0 0 1-.75.75h-2.25a.75.75 0 0 1 0-1.5H21a.75.75 0 0 1 .75.75ZM17.834 18.894a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 1 0-1.061 1.06l1.59 1.591ZM12 18a.75.75 0 0 1 .75.75V21a.75.75 0 0 1-1.5 0v-2.25A.75.75 0 0 1 12 18ZM7.758 17.303a.75.75 0 0 0-1.061-1.06l-1.591 1.59a.75.75 0 0 0 1.06 1.061l1.591-1.59ZM6 12a.75.75 0 0 1-.75.75H3a.75.75 0 0 1 0-1.5h2.25A.75.75 0 0 1 6 12ZM6.697 7.757a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 0 0-1.061 1.06l1.59 1.591Z" />
-        </svg>
-      </div>
-    </div>
-  );
-}
-
 function UnsignedUser() {
   return (
     <div className="w-full h-full flex justify-end items-center ">
@@ -79,6 +70,114 @@ function UnsignedUser() {
       <button className="px-6 py-2 font-semibold border-2 border-sky-400 text-base rounded-[3px] hover:bg-sky-400 hover:text-gray-700 dark:border-sky-600 dark:hover:bg-sky-600 dark:hover:text-gray-950">
         Signin
       </button>
+    </div>
+  );
+}
+
+function SignedUser() {
+  return (
+    <div className="h-full flex flex-row justify-end items-center gap-2 ">
+      <div className="px-2 pl-5">
+        <div className="h-full p-2 rounded-full hover:bg-gray-200/45 dark:hover:bg-gray-50/10   cursor-pointer">
+          <IconNotification />
+        </div>
+      </div>
+      <div className="w-8 h-8  rounded-full outline-double outline-sky-700">
+        <div className="w-8 h-8 rounded-full object-center overflow-hidden object-cover cursor-pointer ">
+          <Image src="/myself.jpg" alt="logo" width={100} height={100} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Theme() {
+  const initialTheme = localStorage.getItem("theme") || "system";
+  const [theme, setTheme] = useState(initialTheme);
+  const [themePanel, setThemePanel] = useState(false);
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+
+    if (theme === "system") {
+      const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      root.classList.toggle("dark", isDark);
+    } else {
+      root.classList.toggle("dark", theme === "dark");
+    }
+
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme") || "system";
+    setTheme(savedTheme);
+  }, []);
+
+  return (
+    <div
+      className="px-2 pl-5 relative"
+      onClick={() => setThemePanel((prev) => !prev)}
+    >
+      <div className="w-full h-full text-sky-500 p-2 rounded-full bg-gray-200/45 dark:bg-gray-50/10 cursor-pointer">
+        <IconLight />
+      </div>
+
+      {/* theme switcher */}
+
+      {themePanel && (
+        <div className="w-32 py-1 absolute top-[3.7rem] overflow-hidden  -left-[40%] rounded-md bg-gray-700 dark:bg-gray-50/5">
+          <ThemeOption
+            text="Light"
+            onClick={() => setTheme("light")}
+            active={theme === "light"}
+            icon={<IconLight />}
+          />
+
+          <ThemeOption
+            text="Dark"
+            active={theme === "dark"}
+            onClick={() => setTheme("dark")}
+            icon={<IconStar />}
+          />
+
+          <ThemeOption
+            text="System"
+            onClick={() => setTheme("system")}
+            active={theme === "system"}
+            icon={<IconSystem />}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ThemeOption({
+  text,
+  active,
+  onClick,
+  icon,
+}: {
+  text: string;
+  active: boolean;
+  onClick: () => void;
+  icon: JSX.Element;
+}) {
+  const activeClass = active
+    ? "text-sky-500"
+    : "text-gray-50 dark:text-gray-300";
+  return (
+    <div
+      className="w-32 h-8 text-sm flex flex-row justify-start items-center hover:bg-gray-400/10 cursor-pointer "
+      onClick={onClick}
+    >
+      <div className="pl-1">
+        <div className={`h-full p-2 rounded-full ${activeClass}`}>{icon}</div>
+      </div>
+      <h4 className="font-semibold pl-1 text-gray-50 dark:text-gray-300">
+        {text}
+      </h4>
     </div>
   );
 }
