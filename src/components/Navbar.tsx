@@ -118,7 +118,7 @@ function Theme() {
   }, [theme]);
 
   useEffect(() => {
-    const savedTheme = window.localStorage.getItem("theme") || "system";
+    const savedTheme = localStorage.getItem("theme") || "system";
     setTheme(savedTheme);
   }, []);
 
