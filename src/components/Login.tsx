@@ -1,17 +1,18 @@
 "use client";
 
-// import { signup } from "@/app/api/auth/login";
+// import { login } from "@/app/api/auth/auth";
+
 import cn from "@/app/lib/cn";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function Signup() {
+export default function Login() {
   return (
-    <div className="w-full   px-20  text-inherit flex justify-center items-center">
-      <div className="w-[40rem] flex flex-col items-center py-4 my-4 text-gray-100 bg-gray-800 dark:bg-gray-50/5 rounded-md ">
+    <div className="w-full h-screen flex justify-center items-center px-20  ">
+      <div className="w-[35rem] flex flex-col items-center py-4 my-4 text-gray-100 bg-gray-800 dark:bg-gray-50/5 rounded-md ">
         <h1 className="text-2xl font-bold text-center py-4  ">
-          Create new your account
+          Login into your account
         </h1>
         <Form />
       </div>
@@ -22,15 +23,16 @@ export default function Signup() {
 function Form() {
   const router = useRouter();
   type Status = "idle" | "loading" | "success" | "error";
-  type Error = "email" | "name" | "username" | "pass" | "pass2" | "terms";
+  type Error = "email" | "username" | "pass";
+  type LoginMode = "username" | "email";
 
   // form state
-  const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
-  const [pass2, setPass2] = useState("");
   const [terms, setTerms] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [mode, setMode] = useState<LoginMode>("email");
 
   // status
   const [status, setStatus] = useState<Status>("idle");
@@ -48,24 +50,17 @@ function Form() {
 
     // reset errors
     resetErrors();
-    // triming the input values
 
-    const Name = name.trim();
+    // checking state validity
     const Username = username.trim();
     const Email = email.trim();
     const Pass = pass.trim();
-    const Pass2 = pass2.trim();
 
-    // checking state validity
-    if (Name.length < 3) {
-      setError("name");
-      return;
-    }
-    if (Username.length < 3) {
+    if (mode === "username" && Username.length < 3) {
       setError("username");
       return;
     }
-    if (!emailRegex.test(Email)) {
+    if (mode === "email" && !emailRegex.test(Email)) {
       setError("email");
       return;
     }
@@ -73,35 +68,29 @@ function Form() {
       setError("pass");
       return;
     }
-    if (Pass !== Pass2) {
-      setError("pass2");
-      return;
-    }
-    if (!terms) {
-      setError("terms");
-      return;
-    }
 
     // if all states are valid submit the form
 
     type FormData = {
-      name: string;
       username: string;
       email: string;
       pass: string;
+      remember: boolean;
+      method: "username" | "email";
     };
 
-    const data: FormData = {
-      name: Name,
+    const data = {
       username: Username,
       email: Email,
       pass: Pass,
-    };
+      remember: terms,
+      method: mode,
+    } as FormData;
 
     setStatus("loading");
     setTimeout(() => {
-      console.log(data);
       setStatus("success");
+      console.log(data);
       router.push("/");
     }, 2000);
 
@@ -110,7 +99,7 @@ function Form() {
     //   setStatus("loading");
     //   setError(null);
     //   try {
-    //     const response = await signup(data);
+    //     const response = await login(data);
     //     // do something with the response
     //     setStatus("success");
     //     console.log(response);
@@ -127,33 +116,28 @@ function Form() {
       onSubmit={handleSubmit}
       onChange={resetErrors}
     >
-      <Input
-        label="Name"
-        type="text"
-        placeholder="Enter your full name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        error={error === "name"}
-        errMsg="Name must be at least 3 characters long"
-      />
-      <Input
-        label="Username"
-        type="text"
-        placeholder="Enter a username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        error={error === "username"}
-        errMsg="Username already taken"
-      />
-      <Input
-        label="Email"
-        type="email"
-        placeholder="example@gmail.com"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        error={error === "email"}
-        errMsg="Please enter a valid email address"
-      />
+      {mode === "username" && (
+        <Input
+          label="Username"
+          type="text"
+          placeholder="Enter a username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          error={error === "username"}
+          errMsg="Invalid username"
+        />
+      )}
+      {mode === "email" && (
+        <Input
+          label="Email"
+          type="email"
+          placeholder="example@gmail.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          error={error === "email"}
+          errMsg="Please enter a valid email address"
+        />
+      )}
       <Input
         label="Password"
         type="password"
@@ -161,30 +145,52 @@ function Form() {
         value={pass}
         onChange={(e) => setPass(e.target.value)}
         error={error === "pass"}
-        errMsg="Password must be at least 8 characters long"
+        errMsg="Invalid password"
       />
-      <Input
-        label="Confirm Password"
-        type="password"
-        value={pass2}
-        onChange={(e) => setPass2(e.target.value)}
-        error={error === "pass2"}
-        errMsg="Passwords do not match"
-      />
-      <Check
-        value={terms}
-        onChange={(e) => setTerms(e.target.checked)}
-        error={error === "terms"}
-        errMsg="You must agree to our terms and conditions !"
-      />
+
+      <div className="flex flex-row w-full justify-between ">
+        <Check
+          label="Remember me"
+          value={terms}
+          onChange={(e) => setTerms(e.target.checked)}
+        />
+        <Link href="/reset">
+          <Check label="Forget password ?" hidden={true} />
+        </Link>
+      </div>
+
+      <div className="py-2">
+        <p className="text-sm w-full h-full italic  text-gray-400">
+          By signing in, you are accepting our{" "}
+          <a
+            className="text-sky-600 font-semibold hover:underline "
+            href="/privacy-policy"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            privacy policy
+          </a>{" "}
+          and{" "}
+          <a
+            className="text-sky-600 font-semibold  hover:underline "
+            href="/terms-of-use"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            terms of use
+          </a>
+          .
+        </p>
+      </div>
 
       {/* Error status module */}
       {status === "error" && (
-        <Error text="There was an error while creating your account ! please try again later !" />
+        <Error text="There was an error while login into your account ! please try again later !" />
       )}
 
       <button
         disabled={status === "loading"}
+        type="submit"
         className={cn(
           "w-full py-2 bg-sky-600 text-lg font-semibold text-gray-200 rounded-md disabled:cursor-not-allowed",
           {
@@ -192,17 +198,17 @@ function Form() {
           }
         )}
       >
-        {status === "loading" ? "Loading..." : "Sign Up"}
+        {status === "loading" ? "Loading..." : "Login"}
       </button>
 
       <div>
         <p className="text-center text-base font-semibold">
-          Already have an account ?{" "}
+          Don&apos;t have an account ?{" "}
           <Link
             className="text-sky-600 font-semibold hover:underline"
-            href="/login"
+            href="/signup"
           >
-            Login
+            Sign up
           </Link>
         </p>
       </div>
@@ -258,55 +264,35 @@ function Input({
 }
 
 function Check({
-  error,
-  errMsg,
+  label,
   value,
   onChange,
+  hidden,
 }: {
-  error: boolean;
-  errMsg: string;
-  value: boolean;
-  onChange: React.ChangeEventHandler<HTMLInputElement>;
+  label: string;
+  value?: boolean;
+  hidden?: boolean;
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
 }) {
   return (
-    <>
-      <div className="flex items-center space-x-2 mt-4">
-        <input
-          type="checkbox"
-          id="terms"
-          checked={value}
-          onChange={onChange}
-          className="h-4 w-4 rounded outline-offset-0 border-none text-green-600"
-        />
-        <label htmlFor="terms" className="text-base italic">
-          I agree to the{" "}
-          <Link
-            className="text-sky-600 font-semibold hover:underline "
-            href="/privacy-policy"
-            target="_blank"
-          >
-            privacy policy
-          </Link>{" "}
-          and{" "}
-          <Link
-            className="text-sky-600 font-semibold  hover:underline "
-            href="/terms-of-use"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            terms of use
-          </Link>
-          .
-        </label>
-      </div>
-      <p
-        className={cn("mt-2 hidden  text-pink-600 text-sm", {
-          block: error,
+    <div className="flex items-center space-x-2 mt-4">
+      <input
+        type={!hidden ? "checkbox" : "hidden"}
+        id="terms"
+        checked={value}
+        onChange={onChange}
+        className="h-4 w-4 rounded outline-offset-0 border-none text-green-600"
+      />
+      <label
+        htmlFor="terms"
+        className={cn("text-md", {
+          "hover:underline underline-offset-2 cursor-pointer text-sky-500   hover:decoration-sky-500":
+            hidden,
         })}
       >
-        {errMsg}
-      </p>
-    </>
+        {label}
+      </label>
+    </div>
   );
 }
 
