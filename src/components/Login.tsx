@@ -141,7 +141,7 @@ function Form() {
       <Input
         label="Password"
         type="password"
-        placeholder="Enter a strong password"
+        placeholder="Enter your password"
         value={pass}
         onChange={(e) => setPass(e.target.value)}
         error={error === "pass"}
