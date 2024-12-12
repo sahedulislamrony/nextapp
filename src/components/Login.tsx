@@ -9,7 +9,7 @@ import { useState } from "react";
 
 export default function Login() {
   return (
-    <div className="w-full h-screen flex justify-center items-center px-20  ">
+    <div className="w-full h-dvh flex justify-center items-center sidePadding  ">
       <div className="w-[35rem] flex flex-col items-center py-4 my-4 text-gray-100 bg-gray-800 dark:bg-gray-50/5 rounded-md ">
         <h1 className="text-2xl font-bold text-center py-4  ">
           Login into your account
@@ -112,7 +112,7 @@ function Form() {
 
   return (
     <form
-      className="flex w-[80%] flex-col space-y-4 px-3 pt-4"
+      className="flex w-[80%] flex-col space-y-4 px-1 md:px-3 "
       onSubmit={handleSubmit}
       onChange={resetErrors}
     >
@@ -285,7 +285,7 @@ function Check({
       />
       <label
         htmlFor="terms"
-        className={cn("text-md", {
+        className={cn("text-sm  sm:text-md", {
           "hover:underline underline-offset-2 cursor-pointer text-sky-500   hover:decoration-sky-500":
             hidden,
         })}

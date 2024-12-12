@@ -8,7 +8,7 @@ import { useState } from "react";
 
 export default function Verify() {
   return (
-    <div className="w-full h-screen flex justify-center items-center px-20  ">
+    <div className="w-full h-screen flex justify-center items-center sidePadding ">
       <div className="w-[35rem] flex flex-col items-center py-4 my-4 text-gray-100 bg-gray-800 dark:bg-gray-50/5 rounded-md ">
         <h1 className="text-2xl font-bold text-center py-4  ">Verify OTP</h1>
         <Form />
@@ -68,7 +68,7 @@ function Form() {
 
   return (
     <form
-      className="flex w-[80%] flex-col px-3 pt-4"
+      className="flex w-[80%] flex-col px-1 md:px-3 "
       onSubmit={handleSubmit}
       onChange={() => setStatus("idle")}
     >
